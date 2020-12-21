@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - run:
+          command: echo "Hello!" 
+
+  deploy:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - run: 
+          name: Deployment
+          command: echo "Success!" 
+
+workflows:
+  build-hold-deploy:
+    jobs:
+      - build
+      - hold:
+          type: approval # 承認ジョブを表示。
+          requires:
+            - build
+      - deploy:
+          context: approvers # ここで制限付きコンテキストを参照。
+          requires:
+            - hold
